@@ -17,10 +17,16 @@ shinyServer(function(input, output) {
   observeEvent(input$submit, {
   my_input <- reactive({
     withProgress(message = "Fetching metadata from Crossref", min = 0, 
-                 {
-    dois <- unlist(strsplit(input$text, "\n"))
-    plyr::ldply(dois, cr_parse) %>%
-      dplyr::as_data_frame()
+                 { # workaround http://stackoverflow.com/questions/30624201/read-excel-in-a-shiny-app
+                   in_file <- input$file_xlsx
+                   if(is.null(in_file))
+                     return(NULL)
+                   file.rename(in_file$datapath,
+                               paste(in_file$datapath, ".xlsx", sep=""))
+                   my_df <- readxl::read_excel(paste(in_file$datapath, ".xlsx", sep=""), 1)
+                   source("apc_fetch.R")
+                   apc_fetch(my_df) %>%
+                     dplyr::as_data_frame()
     })
   })
   output$table <- renderPrint(my_input())
