@@ -8,7 +8,7 @@ library(shinythemes)
 
 
 shinyUI(fluidPage(
-  theme = shinytheme("flatly"),
+  theme = shinytheme("spacelab"),
   titlePanel("monitoar - an app for supporting open access compliancy workflows"),
   fluidRow(column(12, includeMarkdown
                   ("about.md")
@@ -43,14 +43,33 @@ shinyUI(fluidPage(
    )),
   column(
     8,
-    conditionalPanel(
-      condition = "input.submit",
-      h3("R Console Output"),
-      verbatimTextOutput("table"),
-      h3("Download Dataset"),
-      downloadButton('download_xlsx', 'Microsoft Excel (.xlsx)'),
-      downloadButton('download_csv', 'comma-separated file (.csv)')
-      
-    )
+  #   conditionalPanel(
+  #     condition = "input.submit",
+  #     h4("Loading...")
+  #   ),
+  #   conditionalPanel(condition = "input.submit",
+  #     h3("R Console Output"),
+  #     verbatimTextOutput("table"),
+  #     h3("Download Dataset"),
+  #     downloadButton('download_xlsx', 'Microsoft Excel (.xlsx)'),
+  #     downloadButton('download_csv', 'comma-separated file (.csv)')
+  # )
+  conditionalPanel(
+    condition = "$('html').attr('class') == 'shiny-busy'",
+    fluidRow(column(12, tags$h4("Please wait, metadata records are currently fetched from Crossref, Europe PubMed Central and DOAJ. This may take a while"),
+                    align = "center"))
+  ),
+  conditionalPanel(
+    condition = "$('html').attr('class') != 'shiny-busy'",
+    uiOutput("download_button_xlsx")
+  ),
+  conditionalPanel(
+    condition = "$('html').attr('class') != 'shiny-busy'",
+    tags$p(
+      uiOutput("download_button_csv")
+  )
+  )
+  )
   ))
-))
+)
+
