@@ -1,8 +1,8 @@
 #' ## Get Open APC compliant metadata
 #' 
 #' Required libraries
+library(dplyr)
 library(plyr)
-library(tidyverse)
 library(httr)
 library(europepmc)
 #' Load Excel spreadsheet, which has be prepared in accordance with the Open APC initiatives
