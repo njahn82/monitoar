@@ -8,10 +8,7 @@
 library(shiny)
 library(dplyr)
 library(rio)
-
-# parser
-source("cr_parse.r")
-
+library(DT)
 
 shinyServer(function(input, output, session) {
   
@@ -20,11 +17,9 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$submit, {
   my_input <- reactive({
-    # withProgress(message = "Fetching metadata from Crossref", value = 0, 
-                # { # workaround http://stackoverflow.com/questions/30624201/read-excel-in-a-shiny-app
-                 #  shiny::setProgress(1)
                    in_file <- input$file_xlsx
                    if(is.null(in_file))
+                     
                      return(NULL)
                    file.rename(in_file$datapath,
                                paste(in_file$datapath, ".xlsx", sep=""))
@@ -32,35 +27,10 @@ shinyServer(function(input, output, session) {
                    source("apc_fetch.R")
                    apc_fetch(my_df) %>%
                      dplyr::as_data_frame()
-                   # })
-  })
-  output$table <- renderPrint(my_input())
-  
-  # output$download_xlsx <- downloadHandler(
-  #   filename = function() {
-  #     paste0('data-monitoar', Sys.Date(), '.xlsx')
-  #     },
-  #   content = function(con) {
-  #     rio::export(my_input(), con)
-  #     }
-  #   )
-  # output$download_csv <- downloadHandler(
-  #   filename = function() {
-  #     paste0('data-monitoar', Sys.Date(), '.csv')
-  #   },
-  #   content = function(con) {
-  #     rio::export(my_input(), con)
-  #   }
-  # )
-  
-  # Excel output 
-  output$download_button_xlsx <- renderUI({
-    if (!is.null(my_input())) {
-      downloadButton("download_xlsx", "Download Data xlsx",
-                     class = "btn-success")
-    }
   })
   
+
+  # Download options
   output$download_xlsx <- downloadHandler(
       filename = function() {
         paste0('data-monitoar', Sys.Date(), '.xlsx')
@@ -69,14 +39,10 @@ shinyServer(function(input, output, session) {
         rio::export(my_input(), con)
         }
       )
-  # CSV output
-  output$download_button_csv <- renderUI({
-    if (!is.null(my_input())) {
-      downloadButton("download_csv", "Download Data csv",
-                     class = "btn-success")
-    }
-  })
+
   
+  output$table <- renderPrint(my_input())
+
   output$download_csv <- downloadHandler(
     filename = function() {
       paste0('data-monitoar', Sys.Date(), '.csv')
@@ -85,6 +51,26 @@ shinyServer(function(input, output, session) {
       rio::export(my_input(), con)
     }
   )
+  # Download buttons
+  output$download_button_xlsx <- renderUI({
+    if (!is.null(my_input())) {
+      tabsetPanel(
+        tabPanel("Log",
+                 verbatimTextOutput("table")
+                 ),
+        tabPanel("Download",
+      tagList(
+        tags$h4("Download Options"),
+        tags$p("Microsoft Excel",
+            downloadButton("download_xlsx", "Microsoft Excel (.xlsx)",
+                           class = "btn-success")),
+        tags$p("Comma-seperated value",
+            downloadButton("download_csv", "Comma-separated values (.csv)",
+                           class = "btn-success"))
+        )
+      ))
+    }
+  })
   })
   output$loaded <- reactive(1)
 })

@@ -8,68 +8,27 @@ library(shinythemes)
 
 
 shinyUI(fluidPage(
-  theme = shinytheme("spacelab"),
-  titlePanel("monitoar - an app for supporting open access compliancy workflows"),
-  fluidRow(column(12, includeMarkdown
-                  ("about.md")
-                  )),
-  fluidRow(column(
-    4,
-    wellPanel(
-      tags$b("Upload your Excel sheet"),
-      tags$p("Prepare your Open APC compliant Excel spreadsheet, which contains the following columns:"),
-      tags$ul(
-        tags$li("doi: the Digital Object Identifier"),
-        tags$li("period: the year of the invoice"),
-        tags$li("euro: the publication fee paid (including VAT) in €"),
-        tags$li("is_hybrid: a logical indicating whether the article was published in a hybrid (TRUE) or full open access journal (FALSE)")
-      ),
-      fileInput('file_xlsx', 'Upload xlsx File',
-                        accept = ".xlsx"),
-      actionButton(inputId = "submit", "Run!")
-  #   wellPanel(
-  #     tags$b("Paste in your DOIs for Open APC metadata mapping"),
-  #     p(
-  #       "If you have DOIs (Digital Object Identifier) for several articles and would like to retrieve metadata from Crossref in accordance with the Open APC metadata schema, simply paste up to 100 DOIs in the text box below and click the button."
-  #     ),
-  #     textAreaInput(
-  #       inputId = "text",
-  #       label = "DOIs (line separated):",
-  #       value = "10.7717/peerj.2323\n10.1093/pcp/pcw205",
-  #       height = 200
-  #     ),
-  #  actionButton(inputId = "submit", "Run!")
-  #   )
-   )),
-  column(
-    8,
-  #   conditionalPanel(
-  #     condition = "input.submit",
-  #     h4("Loading...")
-  #   ),
-  #   conditionalPanel(condition = "input.submit",
-  #     h3("R Console Output"),
-  #     verbatimTextOutput("table"),
-  #     h3("Download Dataset"),
-  #     downloadButton('download_xlsx', 'Microsoft Excel (.xlsx)'),
-  #     downloadButton('download_csv', 'comma-separated file (.csv)')
-  # )
+  theme = shinytheme("united"),
+  # titlePanel("monitoar - an app for supporting open access compliancy workflows"),
+  fluidRow(
+    tags$div(class = "jumbotron", includeMarkdown
+                  ("about.md"))),
+  fluidRow(
+    column(width = 4,
+           wellPanel(style = "background-color: #ffffff;",
+                     includeMarkdown("upload_help.md"),
+        fileInput('file_xlsx', 'Upload xlsx File',
+                  accept = ".xlsx"),
+        actionButton(inputId = "submit", "Run!"))),
+      column(width = 8,
+      conditionalPanel(condition = "$('html').attr('class') == 'shiny-busy'",
+                         tags$h3("Loading ..."),
+                          tags$p("Please wait, metadata records are currently fetched from Crossref, Europe PubMed Central and DOAJ. This may take a while"),
+                       tags$img(src="gears.gif", align = "middle")
+                         ),
   conditionalPanel(
-    condition = "$('html').attr('class') == 'shiny-busy'",
-    fluidRow(column(12, tags$h4("Please wait, metadata records are currently fetched from Crossref, Europe PubMed Central and DOAJ. This may take a while"),
-                    align = "center"))
-  ),
-  conditionalPanel(
-    condition = "$('html').attr('class') != 'shiny-busy'",
-    uiOutput("download_button_xlsx")
-  ),
-  conditionalPanel(
-    condition = "$('html').attr('class') != 'shiny-busy'",
-    tags$p(
-      uiOutput("download_button_csv")
-  )
-  )
-  )
-  ))
-)
+        condition = "$('html').attr('class') != 'shiny-busy'",
+               uiOutput("download_button_xlsx"))
+    ))))
+
 

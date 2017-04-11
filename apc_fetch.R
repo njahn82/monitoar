@@ -73,3 +73,13 @@ apc_fetch <- function(x) {
   return(apc_df)
 }
 
+# create publication list
+make_reflist <- function(x) {
+ refs <- paste0('<li>', 
+                 x$styled_citation, 
+                 '</br>DOI: <a href="https://', x$doi, 
+                 '>https://doi.org', x$doi, '</a></li>')
+ cat("<ol>", refs, "</ol>")
+}
+
+# create shiny
