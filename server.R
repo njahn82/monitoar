@@ -10,7 +10,7 @@ library(dplyr)
 library(rio)
 
 # parser
-source("cr_parse.r")
+source("cr_parse.R")
 
 
 shinyServer(function(input, output, session) {
