@@ -10,6 +10,9 @@ library(dplyr)
 library(rio)
 library(DT)
 
+# parser
+source("cr_parse.R")
+
 shinyServer(function(input, output, session) {
   
   output$loaded <- reactive(0)
